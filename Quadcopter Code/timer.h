@@ -1,42 +1,54 @@
-#include <Arduino.h>
 #ifndef timer_h
 #define timer_h
 
-class Timer{
+#include <Arduino.h>
+
+class Timer {
   private:
-    long int m_timer;
-    long int m_currentTime;
-    long int m_nextTime;
-    long int m_stopWacthStartTime;
-    long int m_stopWacthStopTime;
+    long int m_timer;                    // Timer interval (in microseconds)
+    long int m_currentTime;              // Current time (in microseconds)
+    long int m_nextTime;                 // Time when the next check should happen
+    long int m_stopwatchStartTime;       // Stopwatch start time (in microseconds)
+    long int m_stopwatchStopTime;        // Stopwatch stop time (in microseconds)
+
   public:
-    Timer() : m_timer(100000), m_currentTime(0), m_nextTime(0){}
-    Timer(int time) : m_timer(time*1000),m_currentTime(0),m_nextTime(0){}
+    // Default constructor (100ms)
+    Timer() : m_timer(100000), m_currentTime(0), m_nextTime(0) {}
 
-    bool check(){
+    // Constructor with a custom time (in milliseconds)
+    Timer(int time) : m_timer(time * 1000), m_currentTime(0), m_nextTime(0) {}
+
+    // Check if the timer has elapsed (returns true if elapsed)
+    bool check() {
       m_currentTime = micros();
-      if(m_currentTime > m_nextTime){
+      if (m_currentTime >= m_nextTime) {
         m_nextTime = m_currentTime + m_timer;
-        return 1;
-      }
-      else{
-        return 0;
+        return true;  // Timer elapsed
+      } else {
+        return false; // Timer has not elapsed yet
       }
     }
 
-    void start(){
-      m_stopWacthStartTime = micros();
+    // Start the stopwatch
+    void start() {
+      m_stopwatchStartTime = micros();
     }
-    long int stop(bool print){
-      m_stopWacthStopTime = micros();
-      if(print){
+
+    // Stop the stopwatch and optionally print the elapsed time
+    long int stop(bool print = false) {
+      m_stopwatchStopTime = micros();
+      long int elapsedTime = m_stopwatchStopTime - m_stopwatchStartTime;
+
+      if (print) {
         Serial.print("TIME = ");
-        Serial.print(m_stopWacthStopTime - m_stopWacthStartTime);
+        Serial.print(elapsedTime);
         Serial.println(" us");
       }
 
-      return (m_stopWacthStopTime - m_stopWacthStartTime);
+      return elapsedTime;
     }
-}timer;
+};
+
+extern Timer timer;
 
 #endif
