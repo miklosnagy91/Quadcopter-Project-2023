@@ -1,63 +1,71 @@
 #ifndef ESC_h
 #define ESC_h
+
 #include <Servo.h>
 
+// ============================================
+// ESC Pin Definitions (these are motor outputs)
+// ============================================
+#define esc1Pin 6 // Motor 1
+#define esc2Pin 7 // Motor 2
+#define esc3Pin 2 // Motor 3
+#define esc4Pin 3 // Motor 4
 
-#define esc1Pin 6 //3
-#define esc2Pin 7 //4
-#define esc3Pin 2 //1
-#define esc4Pin 3 //2
-
+// ============================================
+// Global Servo Instances for Each ESC
+// ============================================
 Servo esc1;
 Servo esc2;
 Servo esc3;
 Servo esc4;
 
-class ESC{
-  public:
-    ESC(){
-      Servo esc1;
-      Servo esc2;
-      Servo esc3;
-      Servo esc4;
-    }
+// ============================================
+// ESC Class
+// ============================================
+class ESC {
+public:
 
-    void begin(){
-      esc1.attach(2,1000,2000);
-      esc2.attach(3,1000,2000);
-      esc3.attach(6,1000,2000);
-      esc4.attach(7,1000,2000);
+  // Constructor (empty in this case)
+  ESC() {
+    // Local redeclaration here does nothing; ESCs are already declared globally
+  }
 
-      esc1.writeMicroseconds(1000);
-      esc2.writeMicroseconds(1000);
-      esc3.writeMicroseconds(1000);
-      esc4.writeMicroseconds(1000);
-      delay(100);
-    }
+  // Initialize ESCs and set them to minimum throttle
+  void begin() {
+    esc1.attach(esc3Pin, 1000, 2000);  // Attach ESC to pin 6
+    esc2.attach(esc4Pin, 1000, 2000);  // Attach ESC to pin 7
+    esc3.attach(esc1Pin, 1000, 2000);  // Attach ESC to pin 2
+    esc4.attach(esc2Pin, 1000, 2000);  // Attach ESC to pin 3
 
-    void escPotWrite(int potValue){
-      esc1.writeMicroseconds(map(potValue,0,1023,1000,2000));
-      esc2.writeMicroseconds(map(potValue,0,1023,1000,2000));
-      esc3.writeMicroseconds(map(potValue,0,1023,1000,2000));
-      esc4.writeMicroseconds(map(potValue,0,1023,1000,2000));
-    };
+    // Set all ESCs to minimum throttle
+    esc1.writeMicroseconds(1000);
+    esc2.writeMicroseconds(1000);
+    esc3.writeMicroseconds(1000);
+    esc4.writeMicroseconds(1000);
 
-    void write1(int val){
-      esc1.writeMicroseconds(val);
-    };
-    void write2(int val){
-      esc2.writeMicroseconds(val);
-    };
-    void write3(int val){
-      esc3.writeMicroseconds(val);
-    };
-    void write4(int val){
-      esc4.writeMicroseconds(val);
-    };
-    off(){
+    delay(100);  // Small delay to allow ESCs to initialize
+  }
 
-    };
+  // Write mapped pot value to all ESCs (used for manual throttle testing)
+  void escPotWrite(int potValue) {
+    int throttle = map(potValue, 0, 1023, 1000, 2000);
+    esc1.writeMicroseconds(throttle);
+    esc2.writeMicroseconds(throttle);
+    esc3.writeMicroseconds(throttle);
+    esc4.writeMicroseconds(throttle);
+  }
 
-}esc;
+  // Individual ESC control functions
+  void write1(int val) { esc1.writeMicroseconds(val); }
+  void write2(int val) { esc2.writeMicroseconds(val); }
+  void write3(int val) { esc3.writeMicroseconds(val); }
+  void write4(int val) { esc4.writeMicroseconds(val); }
+
+  // Placeholder for future shutdown logic
+  void off() {
+    // You could implement motor kill logic here if needed
+  }
+
+} esc; // Create a global instance
+
 #endif
-//extern transceiver trx;
